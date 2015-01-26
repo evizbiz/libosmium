@@ -8,20 +8,18 @@ env:
  - CONFIGURATION=Release
 
 before_install:
- - brew install boost protobuf osm-pbf expat google-sparsehash geos gdal
+ # note: the || true is used here to ignore brew return code when it says 'gdal-1.11.0 already installed'
+ - brew install boost protobuf osm-pbf expat google-sparsehash geos gdal || true
 
 install:
- - cd ..
  - git clone https://github.com/osmcode/osm-testdata.git
- - cd ../
 
 before_script:
- - true
+ - export BREW_PREFIX=$(brew --prefix)
 
 script:
  - mkdir build
  - cd build
- - export BREW_PREFIX=$(brew --prefix)
  - cmake ../ -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DBUILD_EXAMPLES=ON -DBUILD_DATA_TESTS=ON -DBUILD_BENCHMARKS=ON -DBOOST_ROOT="${BREW_PREFIX}" -DCMAKE_INCLUDE_PATH="${BREW_PREFIX}/include" -DCMAKE_LIBRARY_PATH="${BREW_PREFIX}/lib" \
  - make VERBOSE=1
 
