@@ -1,7 +1,6 @@
-language: cpp
+language: objective-c
 
 compiler:
- - gcc
  - clang
 
 env:
@@ -9,38 +8,20 @@ env:
  - CONFIGURATION=Release
 
 before_install:
- # we need at least g++-4.8 for c++11 features
- - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
- - sudo apt-get update --yes --quiet
+ - brew install boost protobuf osm-pbf expat google-sparsehash geos gdal
 
 install:
- # upgrade compilers
- - sudo apt-get install --yes gcc-4.8 g++-4.8
- # make sure 'cpp' is the just installed current one
- - sudo rm /usr/bin/cpp
- - sudo ln -s /usr/bin/cpp-4.8 /usr/bin/cpp
- # upgrade libosmium dependencies
- - sudo apt-get install --yes make libboost-dev libboost-program-options-dev libsparsehash-dev libprotobuf-dev protobuf-compiler libgeos++-dev libproj-dev libgdal1h libgdal-dev
  - cd ..
  - git clone https://github.com/osmcode/osm-testdata.git
- # OSMPBF is too old, install from git
- #- sudo apt-get install --yes libosmpbf-dev
- - git clone https://github.com/scrosby/OSM-binary.git
- - cd OSM-binary/src
- - make
- - sudo make install
- - cd ../..
+ - cd ../
 
 before_script:
  - true
 
 script:
- - if [ "${CXX}" = 'g++' ]; then export CXX=g++-4.8; fi;
  - mkdir build
  - cd build
- - cmake -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} ..
+ - export BREW_PREFIX=$(brew --prefix)
+ - cmake ../ -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DBUILD_EXAMPLES=ON -DBUILD_DATA_TESTS=ON -DBUILD_BENCHMARKS=ON -DBOOST_ROOT="${BREW_PREFIX}" -DCMAKE_INCLUDE_PATH="${BREW_PREFIX}/include" -DCMAKE_LIBRARY_PATH="${BREW_PREFIX}/lib" \
  - make VERBOSE=1
- # Disable multipolygon test because it needs ruby and the 'json' gem, but the
- # travis ruby installation doesn't find the gem it did install itself.
- - ctest -V -E testdata-multipolygon
 
