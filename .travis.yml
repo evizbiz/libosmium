@@ -26,6 +26,8 @@ before_script:
 script:
  - mkdir build
  - cd build
- - cmake ../ -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DBUILD_EXAMPLES=ON -DBUILD_DATA_TESTS=ON -DBUILD_BENCHMARKS=ON -DBOOST_ROOT="${BREW_PREFIX}" -DCMAKE_INCLUDE_PATH="${BREW_PREFIX}/include" -DCMAKE_LIBRARY_PATH="${BREW_PREFIX}/lib" \
+ - cmake .. -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DBUILD_EXAMPLES=ON -DBUILD_DATA_TESTS=ON -DBUILD_BENCHMARKS=ON -DBOOST_ROOT="${BREW_PREFIX}" -DCMAKE_INCLUDE_PATH="${BREW_PREFIX}/include" -DCMAKE_LIBRARY_PATH="${BREW_PREFIX}/lib"
  - make VERBOSE=1
+ # Disable multipolygon test because it needs ruby and the 'json' gem, but the
+ - ctest -V -E testdata-multipolygon
 
